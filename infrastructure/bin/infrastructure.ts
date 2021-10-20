@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
-import { IngestStack } from '../lib/ingest-stack';
+import { SharedInfraStack } from '../lib/shared-infra-stack';
+import { DevelopmentEnvironmentStack } from '../lib/development-environment-stack';
 
 const app = new cdk.App();
-new IngestStack(app, 'IngestStack', {
+const sharedInfra = new SharedInfraStack(app, 'SharedInfraStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
@@ -18,4 +19,7 @@ new IngestStack(app, 'IngestStack', {
   // env: { account: '123456789012', region: 'us-east-1' },
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+});
+new DevelopmentEnvironmentStack(app, 'DevEnvStack', {
+  vpc: sharedInfra.vpc
 });
