@@ -3,6 +3,7 @@ import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
 import { SharedInfraStack } from '../lib/shared-infra-stack';
 import { DevelopmentEnvironmentStack } from '../lib/development-environment-stack';
+import { WebViewStack } from '../lib/web-view-stack';
 
 const app = new cdk.App();
 const sharedInfra = new SharedInfraStack(app, 'SharedInfraStack', {
@@ -21,5 +22,9 @@ const sharedInfra = new SharedInfraStack(app, 'SharedInfraStack', {
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
 new DevelopmentEnvironmentStack(app, 'DevEnvStack', {
+  vpc: sharedInfra.vpc
+});
+new WebViewStack(app, 'WebViewStack', {
+  clusterSocketAddress: sharedInfra.clusterSocketAddress,
   vpc: sharedInfra.vpc
 });
