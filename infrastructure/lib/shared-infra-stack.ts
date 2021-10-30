@@ -35,11 +35,24 @@ export class SharedInfraStack extends cdk.Stack {
              'aws s3 cp edges.txt s3://' + dataBucket.bucketName + '/edges.txt'
     });
 
-    new cdk.CfnOutput(this, 'neptuneS3LoadCommand', {
+    new cdk.CfnOutput(this, 'neptuneS3LoadVertexCommand', {
       value: `curl -X POST -H 'Content-Type: application/json'
         https://${cluster.clusterEndpoint.hostname}:${cluster.clusterEndpoint.port}/loader -d '
           {
             "source" : "s3://${dataBucket.bucketName}/vertex.txt",
+            "format" : "csv",
+            "iamRoleArn" : "${neptuneRole.roleArn}",
+            "region" : "${cdk.Stack.of(this).region}",
+            "failOnError" : "FALSE",
+            "parallelism" : "MEDIUM"
+          }'`
+    });
+
+    new cdk.CfnOutput(this, 'neptuneS3LoadEdgesCommand', {
+      value: `curl -X POST -H 'Content-Type: application/json'
+        https://${cluster.clusterEndpoint.hostname}:${cluster.clusterEndpoint.port}/loader -d '
+          {
+            "source" : "s3://${dataBucket.bucketName}/edges.txt",
             "format" : "csv",
             "iamRoleArn" : "${neptuneRole.roleArn}",
             "region" : "${cdk.Stack.of(this).region}",
