@@ -7,6 +7,8 @@ import * as s3deploy from '@aws-cdk/aws-s3-deployment';
 
 export class SharedInfraStack extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
+  public readonly clusterSocketAddress: string;
+
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -36,10 +38,11 @@ export class SharedInfraStack extends cdk.Stack {
       instanceType: neptune.InstanceType.T3_MEDIUM,
       associatedRoles: [neptuneRole]
     });
+    this.clusterSocketAddress = cluster.clusterEndpoint.socketAddress;
 
     new cdk.CfnOutput(this, 'neptuneS3LoadVertexCommand', {
       value: `curl -X POST -H 'Content-Type: application/json'
-        https://${cluster.clusterEndpoint.hostname}:${cluster.clusterEndpoint.port}/loader -d '
+        https://${cluster.clusterEndpoint.socketAddress}/loader -d '
           {
             "source" : "s3://${dataBucket.bucketName}/vertex.txt",
             "format" : "csv",
@@ -52,7 +55,7 @@ export class SharedInfraStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'neptuneS3LoadEdgesCommand', {
       value: `curl -X POST -H 'Content-Type: application/json'
-        https://${cluster.clusterEndpoint.hostname}:${cluster.clusterEndpoint.port}/loader -d '
+        https://${cluster.clusterEndpoint.socketAddress}/loader -d '
           {
             "source" : "s3://${dataBucket.bucketName}/edges.txt",
             "format" : "csv",
