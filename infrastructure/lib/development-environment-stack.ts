@@ -7,8 +7,6 @@ export interface DevelopmentEnvironmentStackProps extends cdk.StackProps {
 }
 
 export class DevelopmentEnvironmentStack extends cdk.Stack {
-  private vpc: ec2.Vpc;
-
   constructor(scope: cdk.Construct, id: string, props: DevelopmentEnvironmentStackProps) {
     super(scope, id, props);
 
