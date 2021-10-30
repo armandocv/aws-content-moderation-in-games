@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as neptune from '@aws-cdk/aws-neptune';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as s3deploy from '@aws-cdk/aws-s3-deployment';
 
 export class SharedInfraStack extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
@@ -17,6 +18,12 @@ export class SharedInfraStack extends cdk.Stack {
     });
 
     const dataBucket = new s3.Bucket(this, 'DataBucket');
+    dataBucket.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+    new s3deploy.BucketDeployment(this, 'DeploySeedFiles', {
+      sources: [s3deploy.Source.asset('./../data/')],
+      destinationBucket: dataBucket
+    });
 
     const neptuneRole = new iam.Role(this, 'NeptuneRole', {
       assumedBy: new iam.ServicePrincipal('rds.amazonaws.com')
@@ -28,11 +35,6 @@ export class SharedInfraStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       instanceType: neptune.InstanceType.T3_MEDIUM,
       associatedRoles: [neptuneRole]
-    });
-
-    new cdk.CfnOutput(this, 's3CopyCommand', {
-      value: 'aws s3 cp vertex.txt s3://' + dataBucket.bucketName + '/vertex.txt && ' +
-             'aws s3 cp edges.txt s3://' + dataBucket.bucketName + '/edges.txt'
     });
 
     new cdk.CfnOutput(this, 'neptuneS3LoadVertexCommand', {
