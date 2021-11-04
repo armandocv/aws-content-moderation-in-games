@@ -4,6 +4,7 @@ import * as ddb from '@aws-cdk/aws-dynamodb';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as lambdaSource from '@aws-cdk/aws-lambda-event-sources';
+import * as ssm from '@aws-cdk/aws-ssm';
 
 export interface GameIngestStackProps extends cdk.StackProps {
   clusterSocketAddress: string;
@@ -23,17 +24,20 @@ export class GameIngestStack extends cdk.Stack {
       partitionKey: { name: 'id', type: ddb.AttributeType.STRING },
       kinesisStream: chatStream,
       stream: ddb.StreamViewType.NEW_IMAGE,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     const chatIngestLambda = new lambda.Function(this, 'ChatIngestLambda', {
       runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'lambda.lambda_handler',
-      code: lambda.Code.fromAsset('./../chat-lambda/deployment.zip'),
+      code: lambda.Code.fromAsset('./../chat-lambda'),
       environment: {
         CLUSTER_SOCKETADDRESS: props.clusterSocketAddress
       },
       vpc: props.vpc,
       vpcSubnets: props.vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE }),
+      layers: [lambda.LayerVersion.fromLayerVersionArn(this, 'BaseLayerFromArn',
+        ssm.StringParameter.valueForStringParameter(this, '/layers/GremlinLambdaLayer'))],
     });
 
     chatIngestLambda.addEventSource(new lambdaSource.KinesisEventSource(chatStream, {

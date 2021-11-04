@@ -4,6 +4,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as neptune from '@aws-cdk/aws-neptune';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3deploy from '@aws-cdk/aws-s3-deployment';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as ssm from '@aws-cdk/aws-ssm';
 
 export class SharedInfraStack extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
@@ -45,6 +47,16 @@ export class SharedInfraStack extends cdk.Stack {
 
     // TODO:
     // NEED TO ADD IN NEPTUNE WORKBENCH
+
+    const gremlinLambdaLayer = new lambda.LayerVersion(this, 'GremlinLambdaLayer', {
+      code: lambda.Code.fromAsset('./../gremlin-lambda-layer/layer.zip'),
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    new ssm.StringParameter(this, 'GremlinLambdaLayerVersionArn', {
+      parameterName: '/layers/GremlinLambdaLayer',
+      stringValue: gremlinLambdaLayer.layerVersionArn,
+    });
 
     new cdk.CfnOutput(this, 'neptuneS3LoadVertexCommand', {
       value: `curl -X POST -H 'Content-Type: application/json'
