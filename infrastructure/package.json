@@ -2,9 +2,12 @@
   "dependencies": {
     "@aws-cdk/aws-apigateway": "1.130.0",
     "@aws-cdk/aws-cloud9": "1.130.0",
+    "@aws-cdk/aws-dynamodb": "^1.130.0",
     "@aws-cdk/aws-ec2": "1.130.0",
     "@aws-cdk/aws-iam": "1.130.0",
+    "@aws-cdk/aws-kinesis": "^1.130.0",
     "@aws-cdk/aws-lambda": "1.130.0",
+    "@aws-cdk/aws-lambda-event-sources": "^1.130.0",
     "@aws-cdk/aws-lambda-python": "1.130.0",
     "@aws-cdk/aws-neptune": "1.130.0",
     "@aws-cdk/aws-s3": "1.130.0",
