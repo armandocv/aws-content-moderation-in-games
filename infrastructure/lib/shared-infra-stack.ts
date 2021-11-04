@@ -19,8 +19,11 @@ export class SharedInfraStack extends cdk.Stack {
       service: new ec2.GatewayVpcEndpointAwsService('s3')
     });
 
-    const dataBucket = new s3.Bucket(this, 'DataBucket');
-    dataBucket.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+    const dataBucket = new s3.Bucket(this, 'DataBucket', {
+      autoDeleteObjects: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    // dataBucket.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
     new s3deploy.BucketDeployment(this, 'DeploySeedFiles', {
       sources: [s3deploy.Source.asset('./../data/')],
