@@ -15,6 +15,16 @@ export class WebViewStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: WebViewStackProps) {
     super(scope, id, props);
 
+    const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
+      autoDeleteObjects: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    // websiteBucket.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+    new s3deploy.BucketDeployment(this, 'DeployWebsiteFiles', {
+      sources: [s3deploy.Source.asset('./../website/', { exclude: ['index.html'] })],
+      destinationBucket: websiteBucket
+    });
 
     const websiteLambda = new lambda.Function(this, 'WebsiteLambda', {
       runtime: lambda.Runtime.PYTHON_3_9,
