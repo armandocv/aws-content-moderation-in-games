@@ -40,6 +40,9 @@ export class SharedInfraStack extends cdk.Stack {
     });
     this.clusterSocketAddress = cluster.clusterEndpoint.socketAddress;
 
+    // TODO:
+    // NEED TO ADD IN NEPTUNE WORKBENCH
+
     new cdk.CfnOutput(this, 'neptuneS3LoadVertexCommand', {
       value: `curl -X POST -H 'Content-Type: application/json'
         https://${cluster.clusterEndpoint.socketAddress}/loader -d '

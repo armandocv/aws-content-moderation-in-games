@@ -24,7 +24,7 @@ const sharedInfra = new SharedInfraStack(app, 'SharedInfraStack', {
 new DevelopmentEnvironmentStack(app, 'DevEnvStack', {
   vpc: sharedInfra.vpc
 });
-new WebViewStack(app, 'WebViewStack', {
-  clusterSocketAddress: sharedInfra.clusterSocketAddress,
-  vpc: sharedInfra.vpc
-});
+// new WebViewStack(app, 'WebViewStack', {
+//   clusterSocketAddress: sharedInfra.clusterSocketAddress,
+//   vpc: sharedInfra.vpc
+// });
