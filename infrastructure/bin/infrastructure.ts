@@ -25,10 +25,6 @@ const sharedInfra = new SharedInfraStack(app, 'SharedInfraStack', {
 new DevelopmentEnvironmentStack(app, 'DevEnvStack', {
   vpc: sharedInfra.vpc
 });
-// new WebViewStack(app, 'WebViewStack', {
-//   clusterSocketAddress: sharedInfra.clusterSocketAddress,
-//   vpc: sharedInfra.vpc
-// });
 new GameIngestStack(app, 'GameIngestStack', {
   clusterSocketAddress: sharedInfra.clusterSocketAddress,
   vpc: sharedInfra.vpc
