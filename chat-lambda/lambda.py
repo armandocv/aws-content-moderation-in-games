@@ -24,29 +24,47 @@ def lambda_handler(event, context):
         data = json.loads(data_bytes)
 
         if (data['eventName'] == 'INSERT'):
-            person = data['dynamodb']['NewImage']['person']['S']
-            print('person: ' + person)
-
-            person_result = g.V().has('person','GamerAlias',person).toList()
-            print(person_result)
-            if (len(person_result) == 0):
-                g.addV('person').property(T.id, person).property('GamerAlias', person).next()
-                print('Added: ' + person)
-
+            source = data['dynamodb']['NewImage']['GamerAlias']['S']
+            target = data['dynamodb']['NewImage']['target']['S']
             game = data['dynamodb']['NewImage']['game']['S']
-            print('game: ' + game)
-            plays_result = g.V().has('person','GamerAlias',person).out('plays').has('game','GameTitle',game).toList()
-            if (len(plays_result) == 0):
-                plays_result = g.addE('plays').from(g.V(person)).to(g.V(game))
-                print('Added: ' + plays_result)
 
-            sequence_number = record['kinesis','sequenceNumber']
-            message = data['dynamodb']['NewImage']['message']['S']
-            chat_result = g.addV('chat').property(T.id, sequence_number).property('message', message).next()
-            print('Added: ' + chat_result)
-            chat_result = g.addE('says').from(g.V(person)).to(g.V(sequence_number))
-            print('Added: ' + chat_result)
+            # Find people involved in message and add them as vertices if they don't exist
+            findAndAddPerson(source)
+            findAndAddPerson(target)
 
+            # Link people involved in conversation to game
+            addPlays(source, game)
+            addPlays(target, game)
 
-    # make this report each record
+            addChat(source, target, game)
+
     print('Successfully processed %s records.' % str(len(event['Records'])))
+
+def findAndAddPerson(person):
+    print('person: ' + person)
+    person_result = g.V(person).toList()
+    print(person_result)
+    if (len(person_result) == 0):
+        g.addV('person').property(T.id, person).next()
+        print('Added: ' + person)
+    else:
+        print('Already exists:' + person)
+
+def addPlays(person, game):
+    print('person: ' + person)
+    print('game: ' + game)
+    plays_result = g.V(person).out('plays').hasId(game).toList()
+    if (len(plays_result) == 0):
+        g.V(person).addE('plays').to(g.V(game).next()).next()
+        print('Added: ' + person + ' to ' + game)
+    else:
+        print(person + ' already plays ' + game)
+
+def addChat(source, target, game):
+    compositeId = source + ':' + target + ':' + game
+    chat_result = g.E(compositeId).toList()
+    if (len(chat_result) == 0):
+        g.V(source).addE('chats').to(g.V(target).next()).property(T.id, compositeId).next()
+        print('Added: ' + compositeId)
+    else:
+        print('Already exists: ' + compositeId)
