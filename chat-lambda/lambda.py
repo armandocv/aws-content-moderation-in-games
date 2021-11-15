@@ -34,7 +34,7 @@ def lambda_handler(event, context):
             message = data['dynamodb']['NewImage']['message']['S']
 
             # Add GameInstance (id:GameId) if it doesn't exist
-            findAndAddGameInstance
+            findAndAddGameInstance(gameId)
 
             # Find people involved in message and add them as vertices if they don't exist
             findAndAddPerson(source)
