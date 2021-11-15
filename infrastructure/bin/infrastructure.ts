@@ -3,7 +3,6 @@ import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
 import { SharedInfraStack } from '../lib/shared-infra-stack';
 import { DevelopmentEnvironmentStack } from '../lib/development-environment-stack';
-import { WebViewStack } from '../lib/web-view-stack';
 import { GameIngestStack } from '../lib/game-ingest-stack';
 
 const app = new cdk.App();
