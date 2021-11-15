@@ -27,7 +27,7 @@ def lambda_handler(event, context):
         data = json.loads(data_bytes)
 
         if (data['eventName'] == 'INSERT'):
-            source = data['dynamodb']['NewImage']['GamerAlias']['S']
+            source = data['dynamodb']['NewImage']['gamerAlias']['S']
             target = data['dynamodb']['NewImage']['target']['S']
             game = data['dynamodb']['NewImage']['game']['S']
             gameId = data['dynamodb']['NewImage']['gameId']['S']
@@ -68,22 +68,22 @@ def scoreMsg(target, gameId, message):
     labels = response['Labels']
     for label in labels:
         if((label['Name'] == 'IsAbusive') and (label['Score'] >= 0.80)):
-            print('Abuse detected, feelings hurt :(') 
+            print('Abuse detected, feelings hurt :(')
             score += 1
         if((label['Name'] == 'HasBadLanguage') and (label['Score'] >= 0.80)):
-            print('Bad word detected') 
+            print('Bad word detected')
             score += 2
         if((label['Name'] == 'SpecificTarget') and (label['Score'] >= 0.80)):
-            print("Specific target found") 
-            isSpecific = True  
-    
+            print("Specific target found")
+            isSpecific = True
+
     # If the target isn't 'All', then it is specific by default (Direct Message)
     if(target != gameId):
         isSpecific = True
 
     if(isSpecific):
         score += 3
-        
+
     print('Score is: ' + str(score))
     return score
 
@@ -96,7 +96,7 @@ def findAndAddGameInstance(gameId):
         print('Added: ' + gameId)
     else:
         print('Already exists:' + gameId)
-   
+
 def findAndAddPerson(person):
     print('person: ' + person)
     person_result = g.V(person).toList()
@@ -139,6 +139,6 @@ def addChat(source, target, gameId, score):
         g.V(source).addE('chats').to(g.V(target)).property(T.id, compositeId).property(Cardinality.single, 'score', score).property(Cardinality.single, 'gameId', gameId).iterate()
         print('Added: ' + compositeId + ' with score: ' + str(score))
     else:
-        ## Double check this... not sure if += will work. Desired behavior is, if the edge already exist, overwrite T.score property with T.score + score
-        g.E(compositeId).property(Cardinality.single, 'score')
-        print('Already exists: ' + compositeId)
+        old_score = g.E(compositeId).values('score').next()
+        g.E(compositeId).property('score', old_score + score).next()
+        print('Updated chat edge: ' + compositeId)
