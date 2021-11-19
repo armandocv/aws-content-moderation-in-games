@@ -175,7 +175,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/scoring-api/dev/1637006122900-2021-11-15T19:55:22.900Z/scoring-api.zip"
+          "S3Key": "serverless/scoring-api/dev/1637013990667-2021-11-15T22:06:30.667Z/scoring-api.zip"
         },
         "Handler": "wsgi_handler.handler",
         "Runtime": "python3.9",
@@ -202,14 +202,14 @@
         "ApiLogGroup"
       ]
     },
-    "ApiLambdaVersionalrQmt6y1WmTWMCpwaq7241zM7qSgk3C4CrTakl9eyQ": {
+    "ApiLambdaVersionJsOwDKek4h1SezlfAnezSxEw4sD4ZjCY1bjBoAn0Y": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ApiLambdaFunction"
         },
-        "CodeSha256": "zyk8RerlAzoQQ92TyToQyyHuAbLdGHrhUklUXwu2rm8="
+        "CodeSha256": "SksnA/SQunjA0HcCRsLKij5xSzy4Zj6bHP4T4nNLADI="
       }
     },
     "ApiGatewayRestApi": {
@@ -334,7 +334,7 @@
         "ApiLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1637006115852": {
+    "ApiGatewayDeployment1637013985145": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -397,7 +397,7 @@
     "ApiLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ApiLambdaVersionalrQmt6y1WmTWMCpwaq7241zM7qSgk3C4CrTakl9eyQ"
+        "Ref": "ApiLambdaVersionJsOwDKek4h1SezlfAnezSxEw4sD4ZjCY1bjBoAn0Y"
       },
       "Export": {
         "Name": "sls-scoring-api-dev-ApiLambdaFunctionQualifiedArn"

@@ -27,8 +27,25 @@ def get_score():
     print(result)
     return make_response(jsonify(score=result), 200)
 
+@app.route("/scores")
 def get_scores():
-    return 0
+    gameId = request.args.get('gameId')
+    print('gameId is: ' + gameId)
+
+    players = g.V(gameId).inE('plays').outV().valueMap(True).select('GamerAlias').next()
+    print('Players: ')
+    print(players)
+    print("Player Length: " + str(len(players)) + " and Da query be like: ")
+    print(g.V(gameId).inE('plays').outV().valueMap(True).select('GamerAlias').next())
+    scores = {}
+
+    for player in players:
+        print('In player loop, player is: ' + player)
+        score = g.V(player).outE('chats').has('gameId', gameId).valueMap(True).select('score').sum().next()
+        scores[player] = score
+
+    print(scores)
+    return make_response(jsonify(scores), 200)
 
 @app.route("/")
 def hello_from_root():
